@@ -35,7 +35,7 @@ public class CartonAutomaticoFactory implements ICartonFactory{
                     numeros[fila][col] = 0; // Centro libre
                     continue;
                 }
-
+                
                 int numero;
                 do {
                     numero = random.nextInt(rangoMax - rangoMin + 1) + rangoMin;
