@@ -69,6 +69,8 @@ public class Tombola {
                 numerosSalidos.add(numero);
             }
             ultimoNumero = numero;
+        }
             return true;
         }
-
+}
+   
