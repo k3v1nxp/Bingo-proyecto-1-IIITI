@@ -4,6 +4,9 @@
  */
 package Vista;
 
+import Modelo.EnumModoJuego;
+import Modelo.EnumTipoJuego;
+
 /**
  *
  * @author UTN
@@ -17,9 +20,25 @@ public class Bingo extends javax.swing.JFrame {
      */
     public Bingo() {
         initComponents();
+        configurarComboBoxes();
         setExtendedState(Bingo.MAXIMIZED_BOTH);
     }
-
+    
+        private void configurarComboBoxes() {
+        // Configurar combobox de modo de juego
+        String[] modos = new String[EnumModoJuego.values().length];
+        for (int i = 0; i < EnumModoJuego.values().length; i++) {
+            modos[i] = EnumModoJuego.values()[i].getModoJuego();
+        }
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(modos));
+        
+        // Configurar combobox de tipo de juego
+        String[] tipos = new String[EnumTipoJuego.values().length];
+        for (int i = 0; i < EnumTipoJuego.values().length; i++) {
+            tipos[i] = EnumTipoJuego.values()[i].getTipoJuego();
+        }
+        jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(tipos));
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
