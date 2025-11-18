@@ -6,6 +6,7 @@ package Modelo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  *
@@ -44,4 +45,30 @@ public class Tombola {
     public void setUltimoNumero(Integer ultimoNumero) {
         this.ultimoNumero = ultimoNumero;
     }
-}
+       
+    
+    public Integer sacarNumeroAleatorio() {
+        if (numerosDisponibles.isEmpty()) {
+            return null;
+        }
+        Random random = new Random();
+        int indice = random.nextInt(numerosDisponibles.size());
+        Integer numero = numerosDisponibles.remove(indice);
+        numerosSalidos.add(numero);
+        ultimoNumero = numero;
+        return numero;
+    }
+    
+    public boolean ingresarNumeroManual(int numero) {
+        if (numero < 1 || numero > 75) {
+            return false;
+        }
+        if (numerosDisponibles.contains(numero)) {
+            numerosDisponibles.remove(Integer.valueOf(numero));
+            if (!numerosSalidos.contains(numero)) {
+                numerosSalidos.add(numero);
+            }
+            ultimoNumero = numero;
+            return true;
+        }
+
