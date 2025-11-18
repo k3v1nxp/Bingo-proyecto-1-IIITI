@@ -108,6 +108,8 @@ public class InterTombola extends javax.swing.JInternalFrame {
         jLabel75 = new javax.swing.JLabel();
         jLabel76 = new javax.swing.JLabel();
 
+        setMaximizable(true);
+
         jLabel1.setFont(new java.awt.Font("Showcard Gothic", 0, 18)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("bingo game!!");
