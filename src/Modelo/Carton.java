@@ -41,6 +41,25 @@ public class Carton {
         }
         numeroMarcados[2][2] = true; // Centro libre
     }
-
+    public void marcarNumero(int numero) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (numerosCarton[i][j] == numero) {
+                    numeroMarcados[i][j] = true;
+                    return;
+                }
+            }
+        }
+    }
     
+        public void desmarcarNumero(int numero) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (numerosCarton[i][j] == numero && !(i == 2 && j == 2)) {
+                    numeroMarcados[i][j] = false;
+                    return;
+                }
+            }
+        }
+    }
 }

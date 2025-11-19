@@ -27,4 +27,14 @@ public class Tablero {
      public void reiniciar() {
         Arrays.fill(numeroMarcados, false);
     }
+    public void marcarNumero(int numero) {
+        if (numero >= 1 && numero <= 75) {
+            numeroMarcados[numero] = true;
+        }
+    }
+       public void desmarcarNumero(int numero) {
+        if (numero >= 1 && numero <= 75) {
+            numeroMarcados[numero] = false;
+        }
+    }
 }

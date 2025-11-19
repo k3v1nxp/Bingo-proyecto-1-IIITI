@@ -39,5 +39,29 @@ public class SujetoJuegoObserver {
            obs.onJuegoReiniciado();
         }
     }
+        protected void notificarNumeroDesmarcado(int numero){
+        for(IObservadorJuego obs : observadores){
+            obs.onNumeroMarcado(numero); // Puede usar el mismo método o crear uno nuevo
+        }
+    }
+        protected void notificarCartonEliminado(String id){
+        // Notificar que un cartón fue eliminado
+        // Puede implementarse en IObservadorJuego si es necesario
+    }
+    
+    protected void notificarCartonesLimpiados(){
+        // Notificar que los cartones fueron limpiados
+        // Puede implementarse en IObservadorJuego si es necesario
+    }
+    
+    protected void notificarTableroReiniciado(){
+        // Notificar que el tablero fue reiniciado
+        // Puede implementarse en IObservadorJuego si es necesario
+    }
+    
+    protected void notificarTombolaReiniciada(){
+        // Notificar que la tómbola fue reiniciada
+        // Puede implementarse en IObservadorJuego si es necesario
+    }
 }
 

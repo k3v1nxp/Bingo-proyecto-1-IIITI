@@ -19,41 +19,46 @@ public class ComandoMarcarNumero implements IComando{
     
     @Override
     public void ejecutar() {
-        for(Carton carton : gestor.obtenerCartones()){
-            marcarEnCarton(carton, numero, true);
-        }
-        
-        Tablero tablero = gestor.obtenerTablero();
-        tablero.getNumeroMarcados()[numero] = true;
-        
-        Tombola tombola = gestor.obtenerTombola();
-        tombola.setUltimoNumero(numero);
-        tombola.getNumerosSalidos().add(numero);
-        tombola.getNumerosDisponibles().remove(Integer.valueOf(numero));
+      marcarEnCartones();
+        marcarEnTablero();
+        actualizarTombola();
     }
 
     @Override
     public void deshacer() {
-        for(Carton carton : gestor.obtenerCartones()) {
-            marcarEnCarton(carton, numero, false);
-        }
-        
-        Tablero tablero = gestor.obtenerTablero();
-        tablero.getNumeroMarcados()[numero] = false;
+        desmarcarEnCartones();
+        desmarcarEnTablero();
     }
-
-    private void marcarEnCarton(Carton carton, int num, boolean marcar) {
-        int[][] numeros = carton.getNumerosCarton();
-        boolean[][] marcados = carton.getNumeroMarcados();
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
-                if (numeros[i][j] == num) {
-                    marcados[i][j] = marcar;
-                    return;
-                }
-
-            }
+    
+      private void marcarEnCartones() {
+        for(Carton carton : gestor.obtenerCartones()){
+            carton.marcarNumero(numero);
         }
-
+    }
+  
+    private void marcarEnTablero() {
+        Tablero tablero = gestor.obtenerTablero();
+        tablero.marcarNumero(numero);
+    }
+    
+    private void actualizarTombola() {
+        Tombola tombola = gestor.obtenerTombola();
+        tombola.setUltimoNumero(numero);
+        if (!tombola.getNumerosSalidos().contains(numero)) {
+            tombola.getNumerosSalidos().add(numero);
+        }
+        tombola.getNumerosDisponibles().remove(Integer.valueOf(numero));
+    }
+    
+        private void desmarcarEnCartones() {
+        for(Carton carton : gestor.obtenerCartones()) {
+            carton.desmarcarNumero(numero);
+        }
+    }
+    
+    
+    private void desmarcarEnTablero() {
+        Tablero tablero = gestor.obtenerTablero();
+        tablero.desmarcarNumero(numero);
     }
 }

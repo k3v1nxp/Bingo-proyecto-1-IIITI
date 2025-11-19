@@ -20,6 +20,9 @@ import Modelo.GestorMemoria;
 import Modelo.ICartonFactory;
 import Modelo.IComando;
 import Modelo.IEstrategiaGanador;
+import Modelo.Servicio.ServicioCartones;
+import Modelo.Servicio.ServicioJuego;
+import Modelo.Servicio.ServicioTombola;
 import Modelo.SujetoJuegoObserver;
 import Modelo.Tablero;
 import Modelo.Tombola;
@@ -32,19 +35,22 @@ import javax.swing.JOptionPane;
  * @author kevin
  */
 public class Controladorjuego extends SujetoJuegoObserver {
-    private GestorMemoria gestor;
+    private GestorMemoria repositorio;;
     private EnumModoJuego modoJuego;
     private EnumTipoJuego tipoJuego;
     private IEstrategiaGanador estrategiaGanador;
     private FrameJuego frameJuego;
+    private ServicioJuego servicioJuego;
+    private ServicioCartones servicioCartones;
+    private ServicioTombola servicioTombola;
     
     public Controladorjuego(EnumModoJuego modoJuego, EnumTipoJuego tipoJuego) {
-        this.gestor = GestorMemoria.obtenerInstancia();
+        this.repositorio = GestorMemoria.obtenerInstancia();
         this.modoJuego = modoJuego;
         this.tipoJuego = tipoJuego;
         configurarEstrategia();
+        inicializarServicios();
     }
-    
     private void configurarEstrategia() {
         switch (tipoJuego) {
             case NORMAL:
@@ -57,6 +63,12 @@ public class Controladorjuego extends SujetoJuegoObserver {
                 estrategiaGanador = new EstrategiaCartonLleno();
                 break;
         }
+    }
+    
+    private void inicializarServicios() {
+        servicioJuego = new ServicioJuego(repositorio, estrategiaGanador);
+        servicioCartones = new ServicioCartones(repositorio);
+        servicioTombola = new ServicioTombola(repositorio);
     }
     
     public void setFrameJuego(FrameJuego frame) {
@@ -75,64 +87,51 @@ public class Controladorjuego extends SujetoJuegoObserver {
      * Crea un nuevo cartón según el modo de creación
      */
     public Carton crearCarton(String id) {
-        ICartonFactory factory;
-        if (modoJuego == EnumModoJuego.AUTOMATICO) {
-            factory = new CartonAutomaticoFactory();
-        } else {
-            factory = new CartonManualFactory();
-        }
-        
-        Carton carton = factory.crearCarton(id);
-        gestor.agregarCarton(carton);
-        return carton;
+        return servicioCartones.crearCarton(id, modoJuego);
     }
     
     /**
      * Elimina un cartón
      */
     public void eliminarCarton(String id) {
-       // gestor.eliminarCartonPorId(id);
+        servicioCartones.eliminarCarton(id);
+        notificarCartonEliminado(id);
     }
     
     /**
      * Marca un número en todos los cartones
      */
-    public void marcarNumero(int numero) {
-        if (numero < 1 || numero > 75) {
-            JOptionPane.showMessageDialog(null, "El número debe estar entre 1 y 75");
-            return;
+    public String marcarNumero(int numero) {
+        if (!servicioJuego.validarNumero(numero)) {
+            return "El número debe estar entre 1 y 75";
         }
         
-        IComando comando = new ComandoMarcarNumero(numero);
-        comando.ejecutar();
+        servicioJuego.marcarNumero(numero);
         
         // Verificar ganadores
-        verificarGanadores();
-        
+        List<ServicioJuego.ResultadoGanador> ganadores = servicioJuego.verificarGanadores();
+        for (ServicioJuego.ResultadoGanador ganador : ganadores) {
+            notificarCartonGanador(ganador.getIdCarton(), ganador.getTipoVictoria());
+        }
         
         notificarNumeroMarcado(numero);
+        return null; // Exitoso
     }
     
     /**
      * Desmarca un número en todos los cartones
      */
     public void desmarcarNumero(int numero) {
-        IComando comando = new ComandoMarcarNumero(numero);
-        comando.deshacer();
-        
-        // Actualizar tablero
-        Tablero tablero = gestor.obtenerTablero();
-        //tablero.desmarcarNumero(numero);
+        servicioJuego.desmarcarNumero(numero);
+        notificarNumeroDesmarcado(numero);
     }
     
     /**
      * Saca un número de la tómbola (automático o manual)
      */
     public Integer sacarNumeroTombola() {
-        Tombola tombola = gestor.obtenerTombola();
-        
         if (modoJuego == EnumModoJuego.AUTOMATICO) {
-            Integer numero = tombola.sacarNumeroAleatorio();
+            Integer numero = servicioTombola.generarNumeroAleatorio();
             if (numero != null) {
                 marcarNumero(numero);
             }
@@ -146,63 +145,74 @@ public class Controladorjuego extends SujetoJuegoObserver {
     /**
      * Ingresa un número manualmente en la tómbola
      */
-    public boolean ingresarNumeroManual(int numero) {
-        Tombola tombola = gestor.obtenerTombola();
-        if (tombola.ingresarNumeroManual(numero)) {
-            marcarNumero(numero);
-            return true;
+    public String ingresarNumeroManual(int numero) {
+        if (!servicioTombola.ingresarNumeroManual(numero)) {
+            return "El número no es válido o ya salió";
         }
-        return false;
-    }
-    
-    /**
-     * Verifica si hay cartones ganadores
-     */
-    private void verificarGanadores() {
-        List<Carton> cartones = gestor.obtenerCartones();
-        for (Carton carton : cartones) {
-            if (estrategiaGanador.esGanador(carton)) {
-                String tipoVictoria = estrategiaGanador.obtenerTipoVictoria(carton);
-                notificarCartonGanador(carton.getId(), tipoVictoria);
-                // Mostrar mensaje de ganador
-                if (frameJuego != null) {
-                    javax.swing.JOptionPane.showMessageDialog(
-                        frameJuego,
-                        "¡BINGO! Cartón " + carton.getId() + " ganó con: " + tipoVictoria,
-                        "¡GANADOR!",
-                        javax.swing.JOptionPane.INFORMATION_MESSAGE
-                    );
-                }
-            }
-        }
-    }
-    
+        return marcarNumero(numero); // Retorna null si es exitoso, mensaje de error si no
+    }  
     /**
      * Reinicia el juego
      */
     public void reiniciarJuego() {
-        gestor.reiniciarJuego();
+        servicioJuego.reiniciarJuego();
         notificarJuegoReiniciado();
     }
     
+    public void limpiarCartones() {
+        servicioJuego.limpiarCartones();
+        notificarCartonesLimpiados();
+    }
+       
+    public void reiniciarTablero() {
+        servicioJuego.reiniciarTablero();
+        notificarTableroReiniciado();
+    }
+    
+   public void reiniciarTombola() {
+        servicioTombola.reiniciarTombola();
+        notificarTombolaReiniciada();
+    }
     /**
      * Obtiene el último número de la tómbola
      */
-    public Integer getUltimoNumero() {
-        return gestor.obtenerTombola().getUltimoNumero();
+       public Integer getUltimoNumero() {
+        return servicioTombola.obtenerUltimoNumero();
     }
     
-  
+    /**
+     * Obtiene todos los cartones
+     */
     public List<Carton> obtenerCartones() {
-        return gestor.obtenerCartones();
+        return servicioCartones.obtenerCartones();
     }
 
+    /**
+     * Obtiene el tablero
+     */
     public Tablero obtenerTablero() {
-        return gestor.obtenerTablero();
+        return repositorio.obtenerTablero();
     }
     
-   
+    /**
+     * Obtiene la tómbola
+     */
     public Tombola obtenerTombola() {
-        return gestor.obtenerTombola();
+        return repositorio.obtenerTombola();
+    }
+    
+    /**
+     * Obtiene los servicios (para acceso directo si es necesario)
+     */
+    public ServicioJuego getServicioJuego() {
+        return servicioJuego;
+    }
+    
+    public ServicioCartones getServicioCartones() {
+        return servicioCartones;
+    }
+    
+    public ServicioTombola getServicioTombola() {
+        return servicioTombola;
     }
 }
