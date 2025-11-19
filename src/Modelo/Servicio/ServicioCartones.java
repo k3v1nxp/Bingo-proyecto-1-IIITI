@@ -4,10 +4,7 @@
  */
 package Modelo.Servicio;
 
-import Modelo.Carton;
-import Modelo.EnumModoJuego;
 import Modelo.GestorMemoria;
-import Modelo.ICartonFactory;
 
 /**
  *

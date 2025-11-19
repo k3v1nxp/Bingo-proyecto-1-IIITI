@@ -4,6 +4,8 @@
  */
 package Modelo;
 
+import java.util.Arrays;
+
 /**
  *
  * @author Braya
@@ -22,4 +24,7 @@ public class Tablero {
     public Tablero() {
         this.numeroMarcados = new boolean[76];
     }  
+     public void reiniciar() {
+        Arrays.fill(numeroMarcados, false);
+    }
 }

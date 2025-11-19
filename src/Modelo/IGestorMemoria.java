@@ -12,10 +12,13 @@ import java.util.List;
  */
 public interface IGestorMemoria {
     void agregarCarton(Carton carton);
-    void eliminarCarton(Carton id);
+    void eliminarCarton(String id);
     List<Carton> obtenerCartones();
     Carton obtenerCarton(String id);
     Tablero obtenerTablero();
     Tombola obtenerTombola();
     void reiniciarJuego();
+    void limpiarCartones();
+    void reiniciarTablero();
+    void reiniciarTombola();
 }

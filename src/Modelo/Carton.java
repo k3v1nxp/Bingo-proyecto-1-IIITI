@@ -33,7 +33,14 @@ public class Carton {
         this.numeroMarcados = numeroMarcados;
     }
     
-    
+       public void limpiarMarcas() {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                numeroMarcados[i][j] = false;
+            }
+        }
+        numeroMarcados[2][2] = true; // Centro libre
+    }
 
     
 }

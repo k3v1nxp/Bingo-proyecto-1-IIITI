@@ -37,7 +37,7 @@ public class GestorMemoria implements IGestorMemoria{
     }
 
     @Override
-    public void eliminarCarton(Carton id) {
+    public void eliminarCarton(String id) {
         cartones.removeIf(c -> c.getId().equals(id));
     }
 
@@ -74,5 +74,22 @@ public class GestorMemoria implements IGestorMemoria{
         }
         tablero = new Tablero();
         tombola = new Tombola();
+    }
+
+    @Override
+    public void limpiarCartones() {
+           for (Carton carton : cartones) {
+            carton.limpiarMarcas();
+        }
+    }
+
+    @Override
+    public void reiniciarTablero() {
+      tablero.reiniciar();   }
+    
+
+    @Override
+    public void reiniciarTombola() {
+     tombola = new Tombola();
     }
 }
