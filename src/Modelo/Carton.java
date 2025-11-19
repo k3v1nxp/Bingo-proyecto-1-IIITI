@@ -29,8 +29,10 @@ public class Carton {
 
     public Carton(String id) {
         this.id = Objects.requireNonNull(id,"El id no puede ser un valor nulo");
-        this.numerosCarton = numerosCarton;
-        this.numeroMarcados = numeroMarcados;
+        this.numerosCarton = new int[5][5];
+        this.numeroMarcados = new boolean[5][5];
+        // Casilla central marcada por defecto
+        this.numeroMarcados[2][2] = true;
     }
     
        public void limpiarMarcas() {

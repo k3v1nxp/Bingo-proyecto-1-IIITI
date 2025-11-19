@@ -52,10 +52,10 @@ public class EstrategiaNormal implements IEstrategiaGanador {
     
     private boolean verificarVertical(Carton carton){
         boolean[][] marcados = carton.getNumeroMarcados();
-        for(int i=0; i<5; i++){
+        for(int col = 0; col < 5; col++){
             boolean columnaCompleta = true;
-            for (int j=0; j<5; j++){
-                if(!marcados[i][j]){
+            for (int fila = 0; fila < 5; fila++){
+                if(!marcados[fila][col]){
                     columnaCompleta = false;
                     break;
                 }

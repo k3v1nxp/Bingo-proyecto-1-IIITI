@@ -68,9 +68,10 @@ public class Tombola {
             if (!numerosSalidos.contains(numero)) {
                 numerosSalidos.add(numero);
             }
-            ultimoNumero = numero;
-        }
+            ultimoNumero = numero;  
             return true;
         }
+     return false; // El número ya salió o no está disponible
+    }
 }
    
